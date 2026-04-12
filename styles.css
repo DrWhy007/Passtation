@@ -1,0 +1,517 @@
+:root {
+    --primary: #4361ee;
+    --secondary: #3f37c9;
+    --success: #4cc9f0;
+    --danger: #f72585;
+    --warning: #f8961e;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --text: #333;
+    --bg: #f5f7fa;
+    --card: #fff;
+    --border: #dee2e6;
+}
+
+[data-theme="dark"] {
+    --primary: #4895ef;
+    --secondary: #4361ee;
+    --text: #f8f9fa;
+    --bg: #212529;
+    --card: #2b2d42;
+    --border: #495057;
+}
+
+* {
+    box-sizing: border-box;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 10px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    line-height: 1.5;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 15px;
+    border: 1px solid var(--border);
+    margin: 10px 0;
+}
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+h1, h2 {
+    color: var(--primary);
+    margin: 0;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+}
+
+.password-box {
+    display: flex;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#password-display {
+    flex: 1;
+    padding: 12px;
+    font-size: 1.1rem;
+    border: none;
+    background: var(--card);
+    color: var(--text);
+    font-family: 'Courier New', monospace;
+}
+
+.password-actions {
+    display: flex;
+    background: var(--bg);
+}
+
+.password-actions button {
+    padding: 0 12px;
+    color: var(--text);
+    font-size: 1rem;
+    transition: color 0.2s;
+}
+
+.password-actions button:hover {
+    color: var(--primary);
+}
+
+.warning-message {
+    background-color: rgba(247, 37, 133, 0.1);
+    color: var(--danger);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin: 5px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.warning-message i {
+    color: var(--danger);
+}
+
+.strength-meter {
+    margin: 15px 0;
+}
+
+.strength-bar {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--danger);
+    transition: width 0.3s, background-color 0.3s;
+}
+
+.password-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.detail-item {
+    background: var(--bg);
+    padding: 8px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.detail-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text);
+    opacity: 0.8;
+    margin-bottom: 3px;
+}
+
+.detail-value {
+    font-weight: bold;
+    font-size: 1rem;
+    color: var(--primary);
+}
+
+.pronunciation-guide {
+    background: var(--bg);
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin: 10px 0;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.pronunciation-guide.hidden {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+.pronunciation-guide i {
+    color: var(--primary);
+}
+
+.controls {
+    margin: 15px 0;
+}
+
+.controls label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#length-slider {
+    width: 100%;
+    height: 8px;
+    accent-color: var(--primary);
+    margin-top: 5px;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.option-group {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.option-group legend {
+    font-weight: bold;
+    padding: 0 5px;
+    font-size: 0.9rem;
+}
+
+.option-group label {
+    display: block;
+    margin: 6px 0;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+#generate-button {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: white;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    margin: 12px 0;
+    transition: background-color 0.2s;
+}
+
+#generate-button:hover {
+    background-color: var(--secondary);
+}
+
+.vault-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+}
+
+.vault-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.vault-header h2 {
+    font-size: 1.2rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.collapsible {
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle-icon {
+    transition: transform 0.3s;
+    margin-left: 8px;
+    font-size: 0.9rem;
+}
+
+.collapsed + .vault-list {
+    display: none;
+}
+
+.collapsed .toggle-icon {
+    transform: rotate(-90deg);
+}
+
+#clear-vault {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 5px 8px;
+    border-radius: 4px;
+}
+
+#clear-vault:hover {
+    background-color: rgba(247, 37, 133, 0.1);
+}
+
+.vault-status {
+    text-align: center;
+    padding: 8px;
+    font-size: 0.9rem;
+    color: var(--text);
+    opacity: 0.7;
+}
+
+.vault-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: max-height 0.3s;
+}
+
+.vault-list li {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vault-list li:last-child {
+    border-bottom: none;
+}
+
+.vault-entry {
+    flex: 1;
+}
+
+.vault-entry-name {
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 3px;
+    display: block;
+    font-size: 0.95rem;
+}
+
+.vault-entry-password {
+    font-family: 'Courier New', monospace;
+    margin: 3px 0;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.9rem;
+}
+
+.vault-entry-date {
+    font-size: 0.7rem;
+    opacity: 0.6;
+}
+
+.vault-entry-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.vault-entry-actions button {
+    color: var(--text);
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    background: none;
+    border: none;
+    padding: 4px;
+}
+
+.vault-entry-actions button:hover {
+    opacity: 1;
+    color: var(--primary);
+}
+
+.app-footer {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+}
+
+.footer-line {
+    display: block;
+    width: 100%;
+}
+
+.security-disclaimer {
+    color: var(--success);
+}
+
+.github-link {
+    color: var(--primary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--dark);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+.strength-very-weak .strength-fill {
+    width: 10%;
+    background: var(--danger);
+}
+
+.strength-weak .strength-fill {
+    width: 20%;
+    background: var(--danger);
+}
+
+.strength-fair .strength-fill {
+    width: 40%;
+    background: var(--warning);
+}
+
+.strength-good .strength-fill {
+    width: 60%;
+    background: var(--success);
+}
+
+.strength-strong .strength-fill {
+    width: 80%;
+    background: var(--primary);
+}
+
+.strength-excellent .strength-fill {
+    width: 100%;
+    background: var(--secondary);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+    body {
+        padding: 8px;
+        align-items: flex-start;
+    }
+    
+    .container {
+        padding: 12px;
+    }
+    
+    .password-box {
+        margin-bottom: 10px;
+    }
+    
+    .password-actions button {
+        padding: 0 10px;
+    }
+    
+    .options-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .vault-list {
+        max-height: 30vh;
+    }
+    
+    .vault-entry-name {
+        font-size: 0.9rem;
+    }
+    
+    .vault-entry-password {
+        font-size: 0.85rem;
+    }
+    
+    .app-footer {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-height: 700px) {
+    .container {
+        padding: 12px;
+    }
+    
+    .password-details-grid {
+        margin: 8px 0;
+    }
+    
+    .vault-section {
+        margin-top: 15px;
+        padding-top: 12px;
+    }
+    
+    .vault-list {
+        max-height: 25vh;
+    }
+}
