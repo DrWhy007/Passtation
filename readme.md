@@ -1,6 +1,9 @@
 # 🔑 Passtation
 
-Effortlessly craft unbreakable passwords. Stay secure, stay smart. 🔐  
+<img width="2752" height="1536" alt="passtation_article" src="https://github.com/user-attachments/assets/51a8bc34-df4e-4aed-aa2c-16b77f3b4c8a" />
+
+
+🔐 🔐 🔐 🔐 Effortlessly craft unbreakable passwords. Stay secure, stay smart. 🔐 🔐 🔐 🔐
 
 ---
 
