@@ -1,4 +1,3 @@
-// DOM Elements
 const elements = {
     passwordDisplay: document.getElementById('password-display'),
     copyButton: document.getElementById('copy-button'),
@@ -29,15 +28,19 @@ const elements = {
     noRepeating: document.getElementById('no-repeating'),
     noSequential: document.getElementById('no-sequential'),
     noAmbiguous: document.getElementById('no-ambiguous'),
-    customSymbols: document.getElementById('custom-symbols')
+    customSymbols: document.getElementById('custom-symbols'),
+    qtyLetters: document.getElementById('qty-letters'),
+    qtyUppercase: document.getElementById('qty-uppercase'),
+    qtyNumbers: document.getElementById('qty-numbers'),
+    qtySymbols: document.getElementById('qty-symbols')
 };
 
-// State
 let passwordHistory = JSON.parse(localStorage.getItem('passwordHistory')) || [];
 let currentTheme = localStorage.getItem('theme') || 'light';
+let currentUtterance = null;
+let isSpeaking = false;
 let debounceTimer;
 
-// Initialize
 function init() {
     updateTheme();
     updateVaultList();
@@ -46,12 +49,10 @@ function init() {
     generatePassword();
     adaptLayout();
     
-    // Initialize pronunciation visibility (default hidden)
     const showPronunciation = localStorage.getItem('showPronunciation') === 'true';
     elements.pronunciationGuide.style.display = showPronunciation ? 'flex' : 'none';
     elements.showPronunciation.checked = showPronunciation;
     
-    // Setup collapsible sections
     document.querySelectorAll('.collapsible').forEach(header => {
         header.addEventListener('click', () => {
             header.classList.toggle('collapsed');
@@ -59,24 +60,25 @@ function init() {
     });
 }
 
-// Event Listeners
 function addEventListeners() {
     elements.generateButton.addEventListener('click', generatePassword);
     elements.copyButton.addEventListener('click', copyPassword);
     elements.saveButton.addEventListener('click', savePassword);
-    elements.speakButton.addEventListener('click', speakPassword);
+    elements.speakButton.addEventListener('click', toggleSpeech);
     elements.clearVault.addEventListener('click', clearVault);
     elements.themeToggle.addEventListener('click', toggleTheme);
     elements.lengthSlider.addEventListener('input', updateLength);
     
-    // Pronunciation toggle listener
+    document.getElementById('export-csv')?.addEventListener('click', () => exportVault('csv'));
+    document.getElementById('export-txt')?.addEventListener('click', () => exportVault('txt'));
+    document.getElementById('export-pdf')?.addEventListener('click', () => exportVault('pdf'));
+    
     elements.showPronunciation.addEventListener('change', (e) => {
         const show = e.target.checked;
         localStorage.setItem('showPronunciation', show);
         elements.pronunciationGuide.style.display = show ? 'flex' : 'none';
     });
     
-    // Option change listeners
     const options = [
         elements.includeLetters,
         elements.includeMixedCase,
@@ -85,14 +87,18 @@ function addEventListeners() {
         elements.noRepeating,
         elements.noSequential,
         elements.noAmbiguous,
-        elements.customSymbols
+        elements.customSymbols,
+        elements.qtyLetters,
+        elements.qtyUppercase,
+        elements.qtyNumbers,
+        elements.qtySymbols
     ];
     
     options.forEach(option => {
-        option.addEventListener('change', generatePassword);
+        option?.addEventListener('change', generatePassword);
+        option?.addEventListener('input', generatePassword);
     });
     
-    // Responsive listeners
     window.addEventListener('resize', () => {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
@@ -101,7 +107,6 @@ function addEventListeners() {
     });
 }
 
-// Theme Functions
 function toggleTheme() {
     currentTheme = currentTheme === 'light' ? 'dark' : 'light';
     document.body.setAttribute('data-theme', currentTheme);
@@ -116,15 +121,65 @@ function updateTheme() {
 
 function updateThemeIcon() {
     const icon = elements.themeToggle.querySelector('i');
-    icon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    if (icon) {
+        icon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
 }
 
-// Password Generation
+function toggleSpeech() {
+    const text = elements.pronunciationText.textContent;
+    
+    if (isSpeaking) {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        currentUtterance = null;
+        updateSpeakButtonIcon();
+        return;
+    }
+    
+    if (!text || text === 'Pronunciation guide will appear here') {
+        showToast('Generate a password first');
+        return;
+    }
+    
+    currentUtterance = new SpeechSynthesisUtterance(text);
+    currentUtterance.rate = 0.8;
+    currentUtterance.pitch = 1.0;
+    currentUtterance.volume = 1.0;
+    
+    currentUtterance.onstart = () => {
+        isSpeaking = true;
+        updateSpeakButtonIcon();
+    };
+    
+    currentUtterance.onend = () => {
+        isSpeaking = false;
+        currentUtterance = null;
+        updateSpeakButtonIcon();
+    };
+    
+    currentUtterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event.error);
+        isSpeaking = false;
+        currentUtterance = null;
+        updateSpeakButtonIcon();
+        showToast('Speech synthesis error: ' + event.error);
+    };
+    
+    window.speechSynthesis.speak(currentUtterance);
+}
+
+function updateSpeakButtonIcon() {
+    const icon = elements.speakButton.querySelector('i');
+    if (icon) {
+        icon.className = isSpeaking ? 'fas fa-stop' : 'fas fa-volume-up';
+    }
+}
+
 function generatePassword() {
     const length = parseInt(elements.lengthSlider.value);
     const options = getOptions();
     
-    // Don't generate if no character types selected
     if (!options.letters && !options.numbers && !options.symbols) {
         showToast('Please select at least one character type');
         return;
@@ -139,12 +194,16 @@ function generatePassword() {
         attempts++;
     } while (attempts < maxAttempts && !validatePassword(password, options));
     
+    if (!password) {
+        showToast('Failed to generate password. Adjust your constraints.');
+        return;
+    }
+    
     elements.passwordDisplay.value = password;
     updatePasswordDetails(password);
     updatePasswordStrength(password);
     updatePronunciation(password);
     
-    // Show warning if password is very weak
     if (length <= 4) {
         showToast('Warning: Very short passwords are insecure');
     }
@@ -161,64 +220,98 @@ function getOptions() {
         noRepeating: elements.noRepeating.checked,
         noSequential: elements.noSequential.checked,
         noAmbiguous: elements.noAmbiguous.checked,
-        customSymbols: elements.customSymbols.value
+        customSymbols: elements.customSymbols.value || '!@#$%^&*',
+        fixedLetters: Math.max(0, parseInt(elements.qtyLetters.value) || 0),
+        fixedUppercase: Math.max(0, parseInt(elements.qtyUppercase.value) || 0),
+        fixedNumbers: Math.max(0, parseInt(elements.qtyNumbers.value) || 0),
+        fixedSymbols: Math.max(0, parseInt(elements.qtySymbols.value) || 0)
     };
 }
 
 function generatePasswordAttempt(length, options) {
-    let charset = '';
+    let password = '';
     const ambiguousChars = '1lI0Oo';
     
-    if (options.letters) charset += 'abcdefghijklmnopqrstuvwxyz';
-    if (options.mixedCase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    if (options.numbers) charset += '0123456789';
-    if (options.symbols) charset += options.customSymbols || '!@#$%^&*';
+    let charSets = {
+        letters: 'abcdefghijklmnopqrstuvwxyz',
+        uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        numbers: '0123456789',
+        symbols: options.customSymbols
+    };
     
     if (options.noAmbiguous) {
-        charset = charset.split('').filter(c => !ambiguousChars.includes(c)).join('');
+        Object.keys(charSets).forEach(key => {
+            charSets[key] = charSets[key].split('').filter(c => !ambiguousChars.includes(c)).join('');
+        });
     }
     
-    if (!charset) return '';
+    if (options.letters && options.fixedLetters > 0) {
+        for (let i = 0; i < options.fixedLetters && password.length < length; i++) {
+            password += getRandomChar(charSets.letters);
+        }
+    }
     
-    let password = '';
-    const array = new Uint32Array(length);
-    window.crypto.getRandomValues(array);
+    if (options.mixedCase && options.fixedUppercase > 0) {
+        for (let i = 0; i < options.fixedUppercase && password.length < length; i++) {
+            password += getRandomChar(charSets.uppercase);
+        }
+    }
     
-    // Ensure at least one of each selected type
-    if (options.letters) password += getRandomChar('abcdefghijklmnopqrstuvwxyz', array[0]);
-    if (options.mixedCase) password += getRandomChar('ABCDEFGHIJKLMNOPQRSTUVWXYZ', array[1]);
-    if (options.numbers) password += getRandomChar('0123456789', array[2]);
-    if (options.symbols) password += getRandomChar(options.customSymbols || '!@#$%^&*', array[3]);
+    if (options.numbers && options.fixedNumbers > 0) {
+        for (let i = 0; i < options.fixedNumbers && password.length < length; i++) {
+            password += getRandomChar(charSets.numbers);
+        }
+    }
     
-    // Fill remaining characters
-    for (let i = password.length; i < length; i++) {
+    if (options.symbols && options.fixedSymbols > 0) {
+        for (let i = 0; i < options.fixedSymbols && password.length < length; i++) {
+            password += getRandomChar(charSets.symbols);
+        }
+    }
+    
+    let pool = '';
+    if (options.letters) pool += charSets.letters;
+    if (options.mixedCase) pool += charSets.uppercase;
+    if (options.numbers) pool += charSets.numbers;
+    if (options.symbols) pool += charSets.symbols;
+    
+    if (!pool) return '';
+    
+    while (password.length < length) {
         let char;
         let attempts = 0;
         
         do {
-            char = charset[array[i] % charset.length];
+            char = pool[Math.floor(Math.random() * pool.length)];
             attempts++;
             
-            if (attempts > 50) break;
-            
-            if (options.noRepeating && i > 0 && char === password[i-1]) continue;
-            
-            if (options.noSequential && i > 0) {
-                const prevChar = password[i-1];
-                if (isSequential(prevChar, char)) continue;
+            if (attempts > 50) {
+                password += char;
+                break;
             }
             
+            if (options.noRepeating && password.length > 0 && char === password[password.length - 1]) {
+                continue;
+            }
+            
+            if (options.noSequential && password.length > 0) {
+                if (isSequential(password[password.length - 1], char)) {
+                    continue;
+                }
+            }
+            
+            password += char;
             break;
         } while (true);
-        
-        password += char;
     }
     
     return shuffleString(password);
 }
 
-function getRandomChar(charset, randomValue) {
-    return charset[randomValue % charset.length];
+function getRandomChar(charset) {
+    const array = new Uint32Array(1);
+    window.crypto.getRandomValues(array);
+    return charset[array[0] % charset.length];
 }
 
 function isSequential(a, b) {
@@ -242,7 +335,11 @@ function validatePassword(password, options) {
     if (options.letters && !/[a-z]/.test(password)) return false;
     if (options.mixedCase && !/[A-Z]/.test(password)) return false;
     if (options.numbers && !/\d/.test(password)) return false;
-    if (options.symbols && !new RegExp(`[${escapeRegExp(options.customSymbols || '!@#$%^&*')}]`).test(password)) return false;
+    
+    if (options.symbols) {
+        const symbolRegex = new RegExp(`[${escapeRegExp(options.customSymbols)}]`);
+        if (!symbolRegex.test(password)) return false;
+    }
     
     if (options.noRepeating) {
         for (let i = 1; i < password.length; i++) {
@@ -263,24 +360,18 @@ function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// Password Actions
 function copyPassword() {
     const password = elements.passwordDisplay.value;
-    if (!password) return;
+    if (!password) {
+        showToast('No password to copy');
+        return;
+    }
     
     navigator.clipboard.writeText(password).then(() => {
         showToast('Password copied to clipboard!');
+    }).catch(() => {
+        showToast('Failed to copy password');
     });
-}
-
-function speakPassword() {
-    const password = elements.passwordDisplay.value;
-    if (!password) return;
-    
-    const utterance = new SpeechSynthesisUtterance();
-    utterance.text = elements.pronunciationText.textContent || password.split('').join(' ');
-    utterance.rate = 0.8;
-    speechSynthesis.speak(utterance);
 }
 
 function savePassword() {
@@ -315,7 +406,6 @@ function savePassword() {
     showToast(`"${entry.name}" saved to vault`);
 }
 
-// Password Analysis
 function updatePasswordDetails(password) {
     if (!password) {
         elements.lengthDetail.textContent = '0';
@@ -406,7 +496,13 @@ function updatePronunciation(password) {
         '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four',
         '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine',
         '!': 'exclamation', '@': 'at', '#': 'hash', '$': 'dollar',
-        '%': 'percent', '^': 'caret', '&': 'and', '*': 'asterisk'
+        '%': 'percent', '^': 'caret', '&': 'and', '*': 'asterisk',
+        '-': 'dash', '_': 'underscore', '=': 'equals', '+': 'plus',
+        '(': 'open paren', ')': 'close paren', '[': 'open bracket', ']': 'close bracket',
+        '{': 'open brace', '}': 'close brace', ':': 'colon', ';': 'semicolon',
+        "'": 'apostrophe', '"': 'quote', '<': 'less than', '>': 'greater than',
+        ',': 'comma', '.': 'period', '?': 'question', '/': 'slash', '\\': 'backslash',
+        '|': 'pipe', '`': 'backtick', '~': 'tilde'
     };
     
     let pronunciation = '';
@@ -421,7 +517,106 @@ function updatePronunciation(password) {
     elements.pronunciationText.textContent = pronunciation.trim();
 }
 
-// Vault Management
+function exportVault(format) {
+    if (passwordHistory.length === 0) {
+        showToast('Vault is empty. Nothing to export.');
+        return;
+    }
+
+    const dateStr = new Date().toISOString().split('T')[0];
+    let content = '';
+    let filename = '';
+
+    if (format === 'csv') {
+        content = '"Name","Password","Date","Strength"\n';
+        content += passwordHistory.map(e => 
+            `"${e.name.replace(/"/g, '""')}","${e.password.replace(/"/g, '""')}","${e.date}","${e.strength || 'N/A'}"`
+        ).join('\n');
+        filename = `Passtation_Vault_${dateStr}.csv`;
+    } 
+    else if (format === 'txt') {
+        content = '═══════════════════════════════════════\n';
+        content += '     PASSTATION PASSWORD VAULT EXPORT\n';
+        content += '═══════════════════════════════════════\n';
+        content += `Exported: ${new Date().toLocaleString()}\n`;
+        content += `Total Passwords: ${passwordHistory.length}\n`;
+        content += '═══════════════════════════════════════\n\n';
+        
+        passwordHistory.forEach((e, index) => {
+            content += `[${index + 1}] ${e.name}\n`;
+            content += `    Password: ${e.password}\n`;
+            content += `    Date: ${e.date}\n`;
+            content += `    Strength: ${e.strength || 'N/A'}\n`;
+            content += '───────────────────────────────────────\n\n';
+        });
+        
+        filename = `Passtation_Vault_${dateStr}.txt`;
+    }
+    else if (format === 'pdf') {
+        const element = document.createElement('div');
+        element.style.padding = '20px';
+        element.style.fontFamily = 'Arial, sans-serif';
+        
+        element.innerHTML = `
+            <h1>Passtation Password Vault Export</h1>
+            <p><strong>Exported:</strong> ${new Date().toLocaleString()}</p>
+            <p><strong>Total Passwords:</strong> ${passwordHistory.length}</p>
+            <hr>
+            <table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f0f0f0;">
+                        <th>Name</th>
+                        <th>Password</th>
+                        <th>Date</th>
+                        <th>Strength</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${passwordHistory.map(e => `
+                        <tr>
+                            <td>${e.name}</td>
+                            <td style="font-family: monospace;">${e.password}</td>
+                            <td>${e.date}</td>
+                            <td>${e.strength || 'N/A'}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+        
+        const opt = {
+            margin: 10,
+            filename: `Passtation_Vault_${dateStr}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+        };
+        
+        html2pdf().set(opt).from(element).save();
+        showToast('PDF exported successfully!');
+        return;
+    }
+
+    downloadFile(content, filename);
+    showToast(`${format.toUpperCase()} exported successfully!`);
+}
+
+function downloadFile(content, filename) {
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    URL.revokeObjectURL(url);
+}
+
 function updateVaultList() {
     elements.vaultList.innerHTML = '';
     
@@ -508,7 +703,6 @@ function clearVault() {
     showToast('Vault cleared');
 }
 
-// Helper Functions
 function updateLength() {
     const length = elements.lengthSlider.value;
     elements.lengthValue.textContent = length;
@@ -530,7 +724,8 @@ function adaptLayout() {
     
     if (isMobile) {
         document.body.style.padding = '8px';
-        document.querySelector('.container').style.padding = '12px';
+        const container = document.querySelector('.container');
+        if (container) container.style.padding = '12px';
     }
 }
 
@@ -546,9 +741,12 @@ function showToast(message) {
     
     setTimeout(() => {
         toast.classList.remove('show');
-        setTimeout(() => document.body.removeChild(toast), 300);
+        setTimeout(() => {
+            if (document.body.contains(toast)) {
+                document.body.removeChild(toast);
+            }
+        }, 300);
     }, 3000);
 }
 
-// Initialize
 init();

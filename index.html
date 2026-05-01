@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔒 Passtation - Secure Password Generator</title>
+    <title> Passtation - Secure Password Generator</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -20,7 +21,7 @@
                 <div class="password-actions">
                     <button id="copy-button" title="Copy password"><i class="fas fa-copy"></i></button>
                     <button id="save-button" title="Save to vault"><i class="fas fa-save"></i></button>
-                    <button id="speak-button" title="Pronounce password"><i class="fas fa-volume-up"></i></button>
+                    <button id="speak-button" title="Play/Stop pronunciation"><i class="fas fa-volume-up"></i></button>
                 </div>
             </div>
 
@@ -70,11 +71,23 @@
 
             <div class="options-grid">
                 <fieldset class="option-group">
-                    <legend>Character Types</legend>
-                    <label><input type="checkbox" id="include-letters" checked> Letters (a-z)</label>
-                    <label><input type="checkbox" id="include-mixed-case" checked> Uppercase (A-Z)</label>
-                    <label><input type="checkbox" id="include-numbers" checked> Numbers (0-9)</label>
-                    <label><input type="checkbox" id="include-punctuation" checked> Symbols</label>
+                    <legend>Character Types (0=automatic)</legend>
+                    <div class="config-row">
+                        <label><input type="checkbox" id="include-letters" checked> Lowercase (a-z)</label>
+                        <input type="number" id="qty-letters" class="qty-input" min="0" value="0" title="Fixed amount (0 for random)">
+                    </div>
+                    <div class="config-row">
+                        <label><input type="checkbox" id="include-mixed-case" checked> Uppercase (A-Z)</label>
+                        <input type="number" id="qty-uppercase" class="qty-input" min="0" value="0" title="Fixed amount (0 for random)">
+                    </div>
+                    <div class="config-row">
+                        <label><input type="checkbox" id="include-numbers" checked> Numbers (0-9)</label>
+                        <input type="number" id="qty-numbers" class="qty-input" min="0" value="0" title="Fixed amount (0 for random)">
+                    </div>
+                    <div class="config-row">
+                        <label><input type="checkbox" id="include-punctuation" checked> Symbols</label>
+                        <input type="number" id="qty-symbols" class="qty-input" min="0" value="0" title="Fixed amount (0 for random)">
+                    </div>
                 </fieldset>
 
                 <fieldset class="option-group">
@@ -100,14 +113,20 @@
                     <i class="fas fa-vault"></i> Password Vault
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </h2>
-                <button id="clear-vault">Clear Vault</button>
+                <div class="vault-actions-group">
+                    <button id="export-csv" class="btn-export" title="Export to Excel/CSV"><i class="fas fa-file-csv"></i> CSV</button>
+                    <button id="export-txt" class="btn-export" title="Export to Text"><i class="fas fa-file-alt"></i> TXT</button>
+                    <button id="export-pdf" class="btn-export" title="Export to PDF"><i class="fas fa-file-pdf"></i> PDF</button>
+                    <button id="clear-vault" class="btn-clear">Clear Vault</button>
+                </div>
             </div>
             <div class="vault-status" id="vault-status">No passwords saved in vault</div>
             <ul id="vault-list" class="vault-list"></ul>
 
             <div class="app-footer">
-                <div class="footer-line">© 2025 Passtation | Created by <a href="https://github.com/DrWhy007" target="_blank">Abbas E.</a></div>
-                <div class="footer-line security-disclaimer"><a href="safety.html">All data stays on your device. No server storage.</div>
+                <div class="footer-line">© 2026 Passtation | Created by <a href="https://github.com/DrWhy007" target="_blank">Abbas E.</a></div>
+                <div class="footer-line security-disclaimer"><a href="safety.html">All data stays on your device. No server storage.</a></div>
+                <div class="footer-line security-disclaimer"><a href="privacy.html">Privacy</a> | <a href="terms.html">Terms and Conditions</a></div>
                 <a href="https://github.com/DrWhy007/Passtation" class="footer-line github-link" target="_blank">
                     <i class="fab fa-github"></i> View on GitHub
                 </a>

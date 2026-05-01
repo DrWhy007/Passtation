@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passtation - Terms and Conditions</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .terms-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .terms-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .terms-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .terms-header-top h1 {
+            margin: 0;
+        }
+
+        .terms-header-top button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+        
+        .terms-section {
+            margin-bottom: 25px;
+            background: var(--card);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .terms-section h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .terms-section p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .terms-section ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .terms-section li {
+            margin-bottom: 8px;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white !important;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        
+        .back-button:hover {
+            background: var(--secondary);
+        }
+
+        .last-updated {
+            font-style: italic;
+            opacity: 0.7;
+            margin-bottom: 20px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container terms-container">
+        <header class="terms-header">
+            <div class="terms-header-top">
+                <h1><i class="fas fa-file-contract"></i> Terms and Conditions</h1>
+                <button id="theme-toggle"><i class="fas fa-moon"></i></button>
+            </div>
+            <span class="last-updated">Last updated: April 13, 2026</span>
+        </header>
+
+        <section class="terms-section">
+            <p>By accessing or using Passtation, you agree to be bound by these Terms and Conditions. Please read them carefully before using the application.</p>
+        </section>
+
+        <section class="terms-section">
+            <h2>1. Service Description</h2>
+            <p>Passtation is a client-side tool designed to generate passwords and store them locally within your web browser. It is provided as a free, open-source utility under the MIT License.</p>
+        </section>
+
+        <section class="terms-section">
+            <h2>2. "As-Is" Warranty Disclaimer</h2>
+            <p>The application is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability or fitness for a particular purpose.</p>
+            <p>While we use the <strong>Web Crypto API</strong> to provide cryptographically secure generation, we do not guarantee that passwords generated are unbreakable or that the application is immune to all security vulnerabilities.</p>
+        </section>
+
+        <section class="terms-section">
+            <h2>3. User Responsibility</h2>
+            <ul>
+                <li><strong>Data Backup:</strong> Because Passtation stores data exclusively in your browser's <strong>localStorage</strong>, you are solely responsible for backing up any passwords you save.</li>
+                <li><strong>Data Loss:</strong> We cannot recover your data if it is lost due to cleared browser caches, device failure, or accidental deletion.</li>
+                <li><strong>Security Practices:</strong> You are responsible for the security of the devices you use to access this application.</li>
+            </ul>
+        </section>
+
+        <section class="terms-section">
+            <h2>4. Limitation of Liability</h2>
+            <p>In no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software.</p>
+        </section>
+
+        <section class="terms-section">
+            <h2>5. Open Source and License</h2>
+            <p>Passtation is open-source software. You are encouraged to review, fork, and contribute to the code via our official GitHub repository. Use of the code is subject to the terms of the MIT License.</p>
+        </section>
+
+        <section class="terms-section">
+            <h2>6. Changes to Terms</h2>
+            <p>We reserve the right to modify or replace these Terms at any time. Your continued use of the application after any changes constitutes acceptance of the new Terms.</p>
+        </section>
+
+        <section class="terms-section">
+            <h2>7. Contact</h2>
+            <p>If you have any questions regarding these Terms, please contact us at: <a href="mailto:report@passtation.com" style="color: var(--primary);">report@passtation.com</a>.</p>
+        </section>
+
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Passtation
+        </a>
+    </div>
+
+    <script>
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        function updateTheme() {
+            document.body.setAttribute('data-theme', currentTheme);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const icon = document.querySelector('#theme-toggle i');
+            icon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+            updateThemeIcon();
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+        updateTheme();
+    </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passtation - Privacy Policy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .policy-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .policy-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .policy-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .policy-header-top h1 {
+            margin: 0;
+        }
+
+        .policy-header-top button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+        
+        .policy-section {
+            margin-bottom: 25px;
+            background: var(--card);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .policy-section h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .policy-section p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .policy-section ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .policy-section li {
+            margin-bottom: 8px;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white !important;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        
+        .back-button:hover {
+            background: var(--secondary);
+        }
+
+        .last-updated {
+            font-style: italic;
+            opacity: 0.7;
+            margin-bottom: 20px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container policy-container">
+        <header class="policy-header">
+            <div class="policy-header-top">
+                <h1><i class="fas fa-user-shield"></i> Privacy Policy</h1>
+                <button id="theme-toggle"><i class="fas fa-moon"></i></button>
+            </div>
+            <span class="last-updated">Last updated: April 13, 2026</span>
+        </header>
+
+        <section class="policy-section">
+            <p>This Privacy Policy describes our policies on the collection and use of information when you use Passtation. Unlike traditional services, <strong>Passtation does not collect, store, or share your personal data.</strong></p>
+        </section>
+
+        <section class="policy-section">
+            <h2>1. No Collection of Personal Data</h2>
+            <p>We do not ask you to provide personally identifiable information such as your name, email, or phone number. There is no account registration required to use the Service.</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>2. Local Storage and Data Persistence</h2>
+            <p>All data you "save" within the application (such as passwords in your vault) is stored exclusively on your device using your browser's <strong>localStorage</strong>.</p>
+            <ul>
+                <li>We cannot access this data.</li>
+                <li>We do not transmit this data to any server.</li>
+                <li>Your data remains on your device until you manually delete it or clear your browser's cache.</li>
+            </ul>
+        </section>
+
+        <section class="policy-section">
+            <h2>3. Password Generation Security</h2>
+            <p>Passtation uses the <strong>Web Crypto API</strong> to generate passwords locally on your machine. This ensures that your passwords are created using cryptographically secure methods without ever leaving your browser environment.</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>4. Tracking and Cookies</h2>
+            <p>Passtation does not use tracking cookies, web beacons, or third-party analytics (such as Google Analytics) to monitor your behavior.</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>5. Links to Other Websites</h2>
+            <p>Our Service contains links to other sites (such as GitHub). If you click on a third-party link, you will be directed to that site's privacy policy. We have no control over the practices of third-party sites.</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>6. Changes to this Privacy Policy</h2>
+            <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.</p>
+        </section>
+
+        <section class="policy-section">
+            <h2>7. Contact Us</h2>
+            <p>If you have any questions about this Privacy Policy, you can contact us:</p>
+            <p><strong>By email:</strong> <a href="mailto:privacy@passtation.com" style="color: var(--primary);">privacy@passtation.com</a></p>
+        </section>
+
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Passtation
+        </a>
+    </div>
+
+    <script>
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        function updateTheme() {
+            document.body.setAttribute('data-theme', currentTheme);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const icon = document.querySelector('#theme-toggle i');
+            icon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+            updateThemeIcon();
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+        updateTheme();
+    </script>
+</body>
+</html>

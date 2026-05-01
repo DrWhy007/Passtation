@@ -50,6 +50,91 @@ body {
     margin: 10px 0;
 }
 
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+a:visited {
+    color: var(--primary);
+    filter: brightness(0.8);
+}
+
+[data-theme="dark"] a:visited {
+    color: var(--primary);
+    filter: brightness(1.3);
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.config-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    gap: 10px;
+}
+
+.qty-input {
+    width: 60px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--card);
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.qty-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 4px rgba(67, 97, 238, 0.3);
+}
+
+.vault-actions-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-export {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+}
+
+.btn-export:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.btn-clear {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    background: var(--bg);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-clear:hover {
+    background: var(--danger);
+    color: white;
+}
+
 .app-header {
     display: flex;
     justify-content: space-between;
@@ -67,6 +152,17 @@ button {
     border: none;
     background: none;
     padding: 0;
+}
+
+#theme-toggle {
+    font-size: 1.5rem;
+    color: var(--text);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+#theme-toggle:hover {
+    transform: scale(1.1);
 }
 
 .password-box {
@@ -115,10 +211,6 @@ button {
     gap: 8px;
 }
 
-.warning-message i {
-    color: var(--danger);
-}
-
 .strength-meter {
     margin: 15px 0;
 }
@@ -140,29 +232,30 @@ button {
 
 .password-details-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
     margin: 12px 0;
+    padding: 12px;
+    background: var(--bg);
+    border-radius: 6px;
 }
 
 .detail-item {
-    background: var(--bg);
-    padding: 8px;
-    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
 }
 
 .detail-label {
-    display: block;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text);
-    opacity: 0.8;
-    margin-bottom: 3px;
+    opacity: 0.7;
 }
 
 .detail-value {
+    font-size: 1.2rem;
     font-weight: bold;
-    font-size: 1rem;
     color: var(--primary);
 }
 
@@ -175,20 +268,7 @@ button {
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
-
-.pronunciation-guide.hidden {
-    opacity: 0;
-    height: 0;
-    padding: 0;
-    margin: 0;
-    border: none;
-}
-
-.pronunciation-guide i {
-    color: var(--primary);
+    word-break: break-word;
 }
 
 .controls {
@@ -209,9 +289,15 @@ button {
 
 .options-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 15px;
     margin: 15px 0;
+}
+
+@media (min-width: 600px) {
+    .options-grid {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 .option-group {
@@ -224,6 +310,7 @@ button {
     font-weight: bold;
     padding: 0 5px;
     font-size: 0.9rem;
+    color: var(--primary);
 }
 
 .option-group label {
@@ -231,6 +318,10 @@ button {
     margin: 6px 0;
     cursor: pointer;
     font-size: 0.9rem;
+}
+
+.option-group input[type="checkbox"] {
+    cursor: pointer;
 }
 
 #generate-button {
@@ -243,10 +334,15 @@ button {
     font-size: 1rem;
     margin: 12px 0;
     transition: background-color 0.2s;
+    cursor: pointer;
 }
 
 #generate-button:hover {
     background-color: var(--secondary);
+}
+
+#generate-button:active {
+    transform: scale(0.98);
 }
 
 .vault-section {
@@ -260,6 +356,8 @@ button {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .vault-header h2 {
@@ -273,6 +371,7 @@ button {
 .collapsible {
     cursor: pointer;
     user-select: none;
+    flex: 1;
 }
 
 .toggle-icon {
@@ -285,22 +384,12 @@ button {
     display: none;
 }
 
+.collapsed + .vault-status {
+    display: none;
+}
+
 .collapsed .toggle-icon {
     transform: rotate(-90deg);
-}
-
-#clear-vault {
-    background: none;
-    border: none;
-    color: var(--danger);
-    cursor: pointer;
-    font-size: 0.8rem;
-    padding: 5px 8px;
-    border-radius: 4px;
-}
-
-#clear-vault:hover {
-    background-color: rgba(247, 37, 133, 0.1);
 }
 
 .vault-status {
@@ -314,12 +403,12 @@ button {
 .vault-list {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 0 12px 0;
     max-height: 200px;
     overflow-y: auto;
     border: 1px solid var(--border);
     border-radius: 8px;
-    transition: max-height 0.3s;
+    background: var(--card);
 }
 
 .vault-list li {
@@ -336,45 +425,51 @@ button {
 
 .vault-entry {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .vault-entry-name {
     font-weight: bold;
     color: var(--primary);
-    margin-bottom: 3px;
-    display: block;
     font-size: 0.95rem;
 }
 
 .vault-entry-password {
     font-family: 'Courier New', monospace;
-    margin: 3px 0;
     cursor: pointer;
-    user-select: none;
     font-size: 0.9rem;
+    user-select: none;
+    transition: opacity 0.2s;
+}
+
+.vault-entry-password:hover {
+    opacity: 0.7;
 }
 
 .vault-entry-date {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     opacity: 0.6;
 }
 
 .vault-entry-actions {
     display: flex;
-    gap: 6px;
+    gap: 8px;
+    margin-left: 10px;
 }
 
 .vault-entry-actions button {
-    color: var(--text);
-    opacity: 0.6;
-    transition: opacity 0.2s;
     background: none;
     border: none;
-    padding: 4px;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 4px 8px;
+    transition: color 0.2s;
 }
 
 .vault-entry-actions button:hover {
-    opacity: 1;
     color: var(--primary);
 }
 
@@ -390,21 +485,11 @@ button {
 }
 
 .footer-line {
-    display: block;
-    width: 100%;
+    color: var(--text);
 }
 
 .security-disclaimer {
     color: var(--success);
-}
-
-.github-link {
-    color: var(--primary);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
 }
 
 .toast {
@@ -420,98 +505,25 @@ button {
     opacity: 0;
     transition: opacity 0.3s;
     z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 .toast.show {
     opacity: 1;
 }
 
-.strength-very-weak .strength-fill {
-    width: 10%;
-    background: var(--danger);
-}
-
-.strength-weak .strength-fill {
-    width: 20%;
-    background: var(--danger);
-}
-
-.strength-fair .strength-fill {
-    width: 40%;
-    background: var(--warning);
-}
-
-.strength-good .strength-fill {
-    width: 60%;
-    background: var(--success);
-}
-
-.strength-strong .strength-fill {
-    width: 80%;
-    background: var(--primary);
-}
-
-.strength-excellent .strength-fill {
-    width: 100%;
-    background: var(--secondary);
-}
-
-/* Mobile responsiveness */
 @media (max-width: 600px) {
-    body {
-        padding: 8px;
+    .vault-actions-group {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .vault-header {
+        flex-direction: column;
         align-items: flex-start;
     }
     
-    .container {
-        padding: 12px;
-    }
-    
-    .password-box {
-        margin-bottom: 10px;
-    }
-    
-    .password-actions button {
-        padding: 0 10px;
-    }
-    
-    .options-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-    
-    .vault-list {
-        max-height: 30vh;
-    }
-    
-    .vault-entry-name {
-        font-size: 0.9rem;
-    }
-    
-    .vault-entry-password {
-        font-size: 0.85rem;
-    }
-    
-    .app-footer {
-        font-size: 0.7rem;
-    }
-}
-
-@media (max-height: 700px) {
-    .container {
-        padding: 12px;
-    }
-    
-    .password-details-grid {
-        margin: 8px 0;
-    }
-    
-    .vault-section {
-        margin-top: 15px;
-        padding-top: 12px;
-    }
-    
-    .vault-list {
-        max-height: 25vh;
+    .vault-header h2 {
+        width: 100%;
     }
 }
